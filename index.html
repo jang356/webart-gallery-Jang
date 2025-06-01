@@ -29,10 +29,10 @@
       box-shadow: 4px 4px 15px rgba(0,0,0,0.5);
       cursor: pointer;
     }
-    .frame img, .frame video {
+    .frame img {
       display: block;
-      width: 100%;
       height: auto;
+      max-height: 350px;
     }
     .caption, .label {
       text-align: center;
@@ -70,22 +70,33 @@
       background: none;
       color: #eee;
     }
+    .close-button {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 30px;
+      color: white;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      cursor: pointer;
+      z-index: 10000;
+    }
   </style>
 </head>
 <body>
   <div class="gallery">
     <div class="frame" data-video="mermaid.mp4" data-caption="『액자식 구성』, 2025">
-      <img src="mermaid_poster.jpg" alt="Mermaid Poster">
+      <img src="mermaid_poster.jpg" alt="Mermaid Poster" style="width: 260px;">
       <div class="label">그림을 가까이서 보려면 클릭하세요</div>
       <div class="caption">『액자식 구성』, 2025</div>
     </div>
     <div class="frame" data-video="medusa.mp4" data-caption="『액자식 구성』, 2025">
-      <img src="medusa_poster.jpg" alt="Medusa Poster">
+      <img src="medusa_poster.jpg" alt="Medusa Poster" style="width: 320px;">
       <div class="label">그림을 가까이서 보려면 클릭하세요</div>
       <div class="caption">『액자식 구성』, 2025</div>
     </div>
     <div class="frame" data-video="harpy.mp4" data-caption="『액자식 구성』, 2025">
-      <img src="harpy_poster.jpg" alt="Harpy Poster">
+      <img src="harpy_poster.jpg" alt="Harpy Poster" style="width: 370px;">
       <div class="label">그림을 가까이서 보려면 클릭하세요</div>
       <div class="caption">『액자식 구성』, 2025</div>
     </div>
@@ -101,6 +112,11 @@
         const popup = document.createElement("div");
         popup.className = "popup";
 
+        const closeBtn = document.createElement("button");
+        closeBtn.className = "close-button";
+        closeBtn.innerHTML = "&times;";
+        closeBtn.addEventListener("click", () => document.body.removeChild(popup));
+
         const img = document.createElement("img");
         img.src = poster;
 
@@ -112,24 +128,37 @@
         captionEl.className = "caption";
         captionEl.textContent = caption;
 
+        popup.appendChild(closeBtn);
         popup.appendChild(img);
         popup.appendChild(label);
         popup.appendChild(captionEl);
 
+        let clicked = false;
         popup.addEventListener("click", () => {
-          popup.innerHTML = "";
-          const video = document.createElement("video");
-          video.src = videoSrc;
-          video.controls = true;
-          video.autoplay = true;
-          video.style.maxHeight = "70vh";
+          if (!clicked) {
+            clicked = true;
+            popup.innerHTML = "";
+            popup.appendChild(closeBtn);
+            const video = document.createElement("video");
+            video.src = videoSrc;
+            video.controls = true;
+            video.autoplay = true;
+            video.style.maxHeight = "70vh";
 
-          popup.appendChild(video);
-          popup.appendChild(captionEl);
+            popup.appendChild(video);
+            popup.appendChild(captionEl);
+          }
         });
 
         document.body.appendChild(popup);
       });
+    });
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") {
+        const popup = document.querySelector(".popup");
+        if (popup) document.body.removeChild(popup);
+      }
     });
   </script>
 </body>
