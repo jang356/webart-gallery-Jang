@@ -6,8 +6,7 @@
   <style>
     body {
       margin: 0;
-      background: url('gallery_wall.jpg') no-repeat center center fixed;
-      background-size: cover;
+      background: #f7f7f7;
       font-family: sans-serif;
       display: flex;
       justify-content: center;
@@ -61,7 +60,7 @@
       flex-direction: column;
       z-index: 9999;
     }
-    .popup img, .popup video {
+    .popup video, .popup img {
       max-height: 70vh;
       border: 12px solid #704214;
       box-shadow: 0 0 30px rgba(255,255,255,0.5);
@@ -81,84 +80,62 @@
       cursor: pointer;
       z-index: 10000;
     }
+    video { display: none; }
   </style>
 </head>
 <body>
   <div class="gallery">
-    <div class="frame" data-video="mermaid.mp4" data-caption="『액자식 구성』, 2025">
+    <div class="frame" data-id="mermaid">
       <img src="mermaid_poster.jpg" alt="Mermaid Poster" style="width: 260px;">
       <div class="label">그림을 가까이서 보려면 클릭하세요</div>
       <div class="caption">『액자식 구성』, 2025</div>
     </div>
-    <div class="frame" data-video="medusa.mp4" data-caption="『액자식 구성』, 2025">
+    <div class="frame" data-id="medusa">
       <img src="medusa_poster.jpg" alt="Medusa Poster" style="width: 320px;">
       <div class="label">그림을 가까이서 보려면 클릭하세요</div>
       <div class="caption">『액자식 구성』, 2025</div>
     </div>
-    <div class="frame" data-video="harpy.mp4" data-caption="『액자식 구성』, 2025">
+    <div class="frame" data-id="harpy">
       <img src="harpy_poster.jpg" alt="Harpy Poster" style="width: 370px;">
       <div class="label">그림을 가까이서 보려면 클릭하세요</div>
       <div class="caption">『액자식 구성』, 2025</div>
     </div>
   </div>
 
+  <div id="popup" class="popup" style="display:none">
+    <button class="close-button" onclick="closePopup()">×</button>
+    <video id="popupVideo" controls></video>
+    <div class="caption">『액자식 구성』, 2025</div>
+  </div>
+
   <script>
+    const popup = document.getElementById("popup");
+    const popupVideo = document.getElementById("popupVideo");
+
     document.querySelectorAll(".frame").forEach(frame => {
       frame.addEventListener("click", () => {
-        const poster = frame.querySelector("img").src;
-        const videoSrc = frame.dataset.video;
-        const caption = frame.dataset.caption;
-
-        const popup = document.createElement("div");
-        popup.className = "popup";
-
-        const closeBtn = document.createElement("button");
-        closeBtn.className = "close-button";
-        closeBtn.innerHTML = "&times;";
-        closeBtn.addEventListener("click", () => document.body.removeChild(popup));
-
-        const img = document.createElement("img");
-        img.src = poster;
-
-        const label = document.createElement("div");
-        label.className = "label";
-        label.textContent = "그림을 클릭하면 재생됩니다";
-
-        const captionEl = document.createElement("div");
-        captionEl.className = "caption";
-        captionEl.textContent = caption;
-
-        popup.appendChild(closeBtn);
-        popup.appendChild(img);
-        popup.appendChild(label);
-        popup.appendChild(captionEl);
-
-        let clicked = false;
-        popup.addEventListener("click", () => {
-          if (!clicked) {
-            clicked = true;
-            popup.innerHTML = "";
-            popup.appendChild(closeBtn);
-            const video = document.createElement("video");
-            video.src = videoSrc;
-            video.controls = true;
-            video.autoplay = true;
-            video.style.maxHeight = "70vh";
-
-            popup.appendChild(video);
-            popup.appendChild(captionEl);
-          }
-        });
-
-        document.body.appendChild(popup);
+        const id = frame.dataset.id;
+        const videoMap = {
+          mermaid: "mermaid.mp4",
+          medusa: "medusa.mp4",
+          harpy: "harpy.mp4"
+        };
+        popupVideo.src = videoMap[id];
+        popup.style.display = "flex";
+        popupVideo.style.display = "block";
+        popupVideo.play();
       });
     });
 
+    function closePopup() {
+      popupVideo.pause();
+      popupVideo.currentTime = 0;
+      popup.style.display = "none";
+      popupVideo.style.display = "none";
+    }
+
     document.addEventListener("keydown", e => {
-      if (e.key === "Escape") {
-        const popup = document.querySelector(".popup");
-        if (popup) document.body.removeChild(popup);
-      }
+      if (e.key === "Escape") closePopup();
     });
   </script>
 </body>
